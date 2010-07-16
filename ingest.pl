@@ -1,21 +1,31 @@
 #!/usr/bin/env perl
 
 use strict;
+use Data::Dumper;
 
 sub ingest {
 	open SRT, $_[0];
-	my $at_the_zone = "not";
 	my %srt_as_hash;
-	my @moment;
+	my $key;
 	while (<SRT>) {
-		if ($_ =~ /^\d+$/) { @moment = (); }
+		chomp;
+		if ($_ =~ /^\d+$/) {
+			push my @moment, $_;
+			$srt_as_hash{$_} = \@moment;
+			$key = $_;
+		}
 		unless ($_ =~ /^\d+$/) {
-			push @moment, $_;
+			unless ($_ eq "") {
+				push @{$srt_as_hash{$key}}, $_;
+			}
 		}
 	}
+	%srt_as_hash;
 }
 
 my $subtitles = "soundMarkTompkinsAboutSigiKeil.srt" unless $ARGV[0];
 $subtitles = $ARGV[0] unless not $ARGV[0];
 
-&ingest($subtitles);
+my %srt = &ingest($subtitles);
+
+print Dumper %srt;
