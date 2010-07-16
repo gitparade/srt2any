@@ -12,9 +12,9 @@ sub ingest {
 	while (<SRT>) {
 		chomp;
 		if ($_ =~ /^\d+$/) {
-			push my @moment, $_;
-			$srt_as_hash{$_} = \@moment;
-			$key = $_;
+			$key = sprintf("%04s", $_);
+			push my @moment, $key;
+			$srt_as_hash{$key} = \@moment;
 #			$key = sprintf("%09s", $_);
 		}
 		unless ($_ =~ /^\d+$/) {
@@ -45,7 +45,15 @@ foreach (@keys) {
 	@frame = @{$srt{$_}};
 	$frame_length = $#frame;
 	foreach (0..$frame_length) {
-		printf "%s => %s%s", $_, $frame[$_], "<br/>";
+		if ($_ == 0) {
+			next;
+		}
+		elsif ($_ == 1) {
+			printf "<div class=\"time\">%s</div>", $frame[$_];
+		}
+		else {
+			printf "<div class=\"text\">%s</div>", $frame[$_];
+		}
 	}
 	print "<br/>";
 }
